@@ -1,7 +1,8 @@
-document.querySelector("#loginButton").addEventListener("click", function() {
-    console.log("Login button clicked");
-})
-
-document.querySelector("#todoButton").addEventListener("click", function() {
-    document.querySelector(".todo-list").appendChild(document.createElement("li")).innerText = "New Todo Item";
-})
+document.querySelector('#todoButton').addEventListener('click', function() {
+    const todoInput = document.querySelector('#todoInput');
+    const todoList = document.querySelector('.todo-list');
+    const newTask = document.createElement('li');
+    newTask.textContent = todoInput.value;
+    todoList.appendChild(newTask);
+    todoInput.value = '';
+});
