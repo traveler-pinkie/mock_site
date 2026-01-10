@@ -35,6 +35,14 @@ app.get('/',async (request, response)=>{
     // .catch(error => console.error(error))
 })
 
+app.get('/login',async (request, response)=>{
+    response.render('login.ejs', {})
+})
+
+app.get('/signup',async (request, response)=>{
+    response.render('signup.ejs', {})
+})
+
 app.post('/addTodo', (request, response) => {
     db.collection('todos').insertOne({thing: request.body.todoItem, completed: false})
     .then(result => {
