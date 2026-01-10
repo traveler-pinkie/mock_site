@@ -39,8 +39,28 @@ app.get('/login',async (request, response)=>{
     response.render('login.ejs', {})
 })
 
+
 app.get('/signup',async (request, response)=>{
     response.render('signup.ejs', {})
+})
+
+app.post('/signup', async(request, response) => {
+    db.collection('users').insertOne({username: request.body.username, password: request.body.password})
+    .then(result => {
+        console.log('User Signed Up')
+        response.redirect('/login')
+    })
+    .catch(error => console.error(error))
+})
+
+app.post('/login',async (request, response)=>{
+    const user = await db.collection('users').findOne({username: request.body.username})
+    if(user && user.password === request.body.password){
+        response.redirect('/')
+    }else{
+        response.send('Invalid credentials')
+    }
+
 })
 
 app.post('/addTodo', (request, response) => {
