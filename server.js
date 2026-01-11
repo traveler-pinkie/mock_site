@@ -22,26 +22,25 @@ app.use(express.json())
 
 
 app.get('/',async (request, response)=>{
-    const todoItems = await db.collection('todos').find().toArray()
-    const itemsLeft = await db.collection('todos').countDocuments({completed: false})
-    response.render('index.ejs', { items: todoItems, left: itemsLeft })
-    // db.collection('todos').find().toArray()
-    // .then(data => {
-    //     db.collection('todos').countDocuments({completed: false})
-    //     .then(itemsLeft => {
-    //         response.render('index.ejs', { items: data, left: itemsLeft })
-    //     })
-    // })
-    // .catch(error => console.error(error))
+    response.render('login.ejs', {})
+
 })
 
-app.get('/login',async (request, response)=>{
-    response.render('login.ejs', {})
+app.get('/index',async (request, response)=>{
+    const todoItems = await db.collection('todos').find().toArray()
+    const itemsLeft = await db.collection('todos').countDocuments({completed: false})
+    response.render('index.ejs', {items: todoItems, left: itemsLeft})
+
 })
+
 
 
 app.get('/signup',async (request, response)=>{
     response.render('signup.ejs', {})
+})
+
+app.get('/login',async (request, response)=>{
+    response.render('login.ejs', {})
 })
 
 app.post('/signup', async(request, response) => {
@@ -56,7 +55,7 @@ app.post('/signup', async(request, response) => {
 app.post('/login',async (request, response)=>{
     const user = await db.collection('users').findOne({username: request.body.username})
     if(user && user.password === request.body.password){
-        response.redirect('/')
+        response.redirect('/index')
     }else{
         response.send('Invalid credentials')
     }
