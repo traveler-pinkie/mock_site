@@ -23,19 +23,20 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 
+//-----GET Operations-----//
+
+
 app.get('/',async (request, response)=>{
     response.render('login.ejs', {})
 
 })
 
 app.get('/index',async (request, response)=>{
-    const todoItems = await db.collection('todos').find().toArray()
-    const itemsLeft = await db.collection('todos').countDocuments({completed: false})
+    const todoItems = await db.collection('todos').find({id : ID}).toArray()
+    const itemsLeft = await db.collection('todos').countDocuments({completed: false, id : ID})
     response.render('index.ejs', {items: todoItems, left: itemsLeft})
 
 })
-
-
 
 app.get('/signup',async (request, response)=>{
     response.render('signup.ejs', {})
@@ -44,6 +45,10 @@ app.get('/signup',async (request, response)=>{
 app.get('/login',async (request, response)=>{
     response.render('login.ejs', {})
 })
+
+
+
+//-----POST Operations-----//
 
 app.post('/signup', async(request, response) => {
     ID = Math.floor(Math.random() * 1000000)
@@ -76,6 +81,18 @@ app.post('/addTodo', (request, response) => {
     })
     .catch(error => console.error(error))
 })
+
+app.post('/logout', (request, response) => {
+    ID = null
+    try{
+        response.redirect('/')
+    }catch(error){
+        console.error(error)
+    }
+})
+
+
+//-----PUT Operations-----//
 
 app.put('/markComplete', (request, response) => {
     db.collection('todos').updateOne({id: ID, thing: request.body.itemFromJS},{
@@ -110,6 +127,8 @@ app.put('/markUnComplete', (request, response) => {
     .catch(error => console.error(error))
 
 })
+
+//-----DELETE Operations-----//
 
 app.delete('/deleteItem', (request, response) => {
     db.collection('todos').deleteOne({id: ID, thing: request.body.itemFromJS})
