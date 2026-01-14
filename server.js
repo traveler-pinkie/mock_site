@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const MongoClient = require('mongodb').MongoClient
 const PORT = 2121
+let ID
+
 require('dotenv').config()
 
 
@@ -44,7 +46,8 @@ app.get('/login',async (request, response)=>{
 })
 
 app.post('/signup', async(request, response) => {
-    db.collection('users').insertOne({username: request.body.username, password: request.body.password})
+    ID = Math.floor(Math.random() * 1000000)
+    db.collection('users').insertOne({id: ID, username: request.body.username, password: request.body.password})
     .then(result => {
         console.log('User Signed Up')
         response.redirect('/login')
@@ -53,7 +56,9 @@ app.post('/signup', async(request, response) => {
 })
 
 app.post('/login',async (request, response)=>{
+
     const user = await db.collection('users').findOne({username: request.body.username})
+    ID = user ? user.id : null
     if(user && user.password === request.body.password){
         response.redirect('/index')
     }else{
@@ -64,16 +69,16 @@ app.post('/login',async (request, response)=>{
 })
 
 app.post('/addTodo', (request, response) => {
-    db.collection('todos').insertOne({thing: request.body.todoItem, completed: false})
+    db.collection('todos').insertOne({id: ID, thing: request.body.todoItem, completed: false})
     .then(result => {
         console.log('Todo Added')
-        response.redirect('/')
+        response.redirect('/index')
     })
     .catch(error => console.error(error))
 })
 
 app.put('/markComplete', (request, response) => {
-    db.collection('todos').updateOne({thing: request.body.itemFromJS},{
+    db.collection('todos').updateOne({id: ID, thing: request.body.itemFromJS},{
         $set: {
             completed: true
           }
@@ -90,7 +95,7 @@ app.put('/markComplete', (request, response) => {
 })
 
 app.put('/markUnComplete', (request, response) => {
-    db.collection('todos').updateOne({thing: request.body.itemFromJS},{
+    db.collection('todos').updateOne({id: ID, thing: request.body.itemFromJS},{
         $set: {
             completed: false
           }
@@ -107,7 +112,7 @@ app.put('/markUnComplete', (request, response) => {
 })
 
 app.delete('/deleteItem', (request, response) => {
-    db.collection('todos').deleteOne({thing: request.body.itemFromJS})
+    db.collection('todos').deleteOne({id: ID, thing: request.body.itemFromJS})
     .then(result => {
         console.log('Todo Deleted')
         response.json('Todo Deleted')
