@@ -74,7 +74,7 @@ app.post('/login',async (request, response)=>{
 })
 
 app.post('/addTodo', (request, response) => {
-    db.collection('todos').insertOne({id: ID, thing: request.body.todoItem, completed: false})
+    db.collection('todos').insertOne({id: ID, thing: request.body.todoItem, completed: false, date: new Date().toJSON().slice(0,10)})
     .then(result => {
         console.log('Todo Added')
         response.redirect('/index')
