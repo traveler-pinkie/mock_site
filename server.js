@@ -34,8 +34,10 @@ app.get('/',async (request, response)=>{
 app.get('/index',async (request, response)=>{
     const todoItems = await db.collection('todos').find({id : ID}).toArray()
     const itemsLeft = await db.collection('todos').countDocuments({completed: false, id : ID})
+    for(let i=0; i<todoItems.length; i++){
+        todoItems[i].daysPassed = Math.floor(calculateDate(todoItems[i].date))
+    }
     response.render('index.ejs', {items: todoItems, left: itemsLeft})
-
 })
 
 app.get('/signup',async (request, response)=>{
@@ -74,7 +76,7 @@ app.post('/login',async (request, response)=>{
 })
 
 app.post('/addTodo', (request, response) => {
-    db.collection('todos').insertOne({id: ID, thing: request.body.todoItem, completed: false, date: new Date().toJSON().slice(0,10)})
+    db.collection('todos').insertOne({id: ID, thing: request.body.todoItem, completed: false, date: new Date()})
     .then(result => {
         console.log('Todo Added')
         response.redirect('/index')
@@ -143,3 +145,14 @@ app.delete('/deleteItem', (request, response) => {
 app.listen(process.env.PORT || PORT, ()=>{
     console.log(`Server running on port ${PORT}`)
 })
+
+//-----function Operations-----//
+
+function calculateDate(startDate){
+    let start = startDate
+    let end = new Date()
+    let timeDifference = end - start
+    let daysDifference = timeDifference / (1000 * 3600 * 24)
+    return daysDifference
+    
+}
